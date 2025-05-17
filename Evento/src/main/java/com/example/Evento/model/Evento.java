@@ -22,8 +22,7 @@ public class Evento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_evento")
-    private int id;
+    private int id_evento;
 
     @Column(name = "nombre_evento", nullable = false, length = 100, unique = true)
     private String nombre_evento;
