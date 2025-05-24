@@ -1,5 +1,7 @@
 package com.example.Usuario.model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,29 +13,32 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table
+@Table(name = "Usuario")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idUsuario;
+    private int id;
 
-    @Column(name = "Nombre", nullable = false)
-    private String nombre;
+    @Column(name = "Nombre", length = 100, nullable = false)
+    private String Nombre;
 
-    @Column(name = "Email", nullable = false, unique = true)
-    private String email;
+    @Column(name = "Email", unique = true, length = 100, nullable = false)
+    private String Email;
 
-    @Column(name = "Contraseña", nullable = false)
-    private String contraseña;
+    @Column(name = "Contraseña", unique = true, length = 100, nullable = false)
+    private String Contraseña;
 
-    @Column(name = "Direccion", nullable = true)
-    private String direccion;
+    @Column(name = "Fecha_Registro", nullable = false)
+    private LocalDate Fecha_Registro;
 
-    @Column(name = "Telefono", nullable = true, unique = true)
-    private int telefono;
+    @Column(name = "Direccion", unique = true, length = 200, nullable = false)
+    private String Direccion;
+
+    @Column(name = "Telefono", unique = true, length = 20, nullable = false)
+    private String Telefono;
 
 }
