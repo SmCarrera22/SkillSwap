@@ -13,18 +13,16 @@ public interface EventoRepository extends JpaRepository<Evento, Integer> {
 
     Evento findByNombreEvento(String nombre_evento);
 
-    @Query("SELECT e FROM Evento e WHERE e.fecha_inicio_evento >= :fechaInicio AND e.fecha_fin_evento <= :fechaFin")
-    List<Evento> findEventosByFecha(
-        @Param("fechaInicio") Date fechaInicio, 
-        @Param("fechaFin") Date fechaFin
-    );
+    @Query("SELECT e FROM Evento e WHERE e.fechaInicioEvento >= :fechaInicio AND e.fechaFinEvento <= :fechaFin")
+    List<Evento> findEventosByFecha(@Param("fechaInicio") Date fechaInicio, @Param("fechaFin") Date fechaFin);
 
-    @Query("SELECT e FROM Evento e WHERE e.costo_entrada_evento <= :costoMaximo")
+
+    @Query("SELECT e FROM Evento e WHERE e.costoEntradaEvento <= :costoMaximo")
     List<Evento> findEventosByCosto(
         @Param("costoMaximo") int costoMaximo
     );
 
-    @Query("SELECT e FROM Evento e WHERE CAST(e.capacidad_maxima_evento AS int) >= :capacidadMinima")
+    @Query("SELECT e FROM Evento e WHERE CAST(e.capacidadMaximaEvento AS int) >= :capacidadMinima")
     List<Evento> findEventosByCapacidad(
         @Param("capacidadMinima") int capacidadMinima
     );

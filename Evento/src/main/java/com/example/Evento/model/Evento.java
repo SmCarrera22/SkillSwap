@@ -25,24 +25,24 @@ public class Evento {
     private int id_evento;
 
     @Column(name = "nombre_evento", nullable = false, length = 100, unique = true)
-    private String nombre_evento;
+    private String nombreEvento;
 
     @Column(name = "descripcion_evento", nullable = false, length = 255)
-    private String descripcion_evento;
+    private String descripcionEvento;
 
     @Column(name = "fecha_inicio_evento", nullable = false, length = 100)
-    private Date fecha_inicio_evento;
+    private Date fechaInicioEvento;
     
     @Column(name = "fecha_fin_evento", nullable = false, length = 100)
-    private Date fecha_fin_evento;
+    private Date fechaFinEvento;
 
     @Column(name = "capacidad_maxima_evento", nullable = false, length = 100)
-    private int capacidad_maxima_evento;
+    private int capacidadMaximaEvento;
 
     @Column(name = "costo_entrada_evento", nullable = false, length = 100)
-    private int costo_entrada_evento;
+    private int costoEntradaEvento;
 
     @Column(name = "fecha_creacion_evento", nullable = false, length = 100)
-    private Date fecha_creacion_evento;
+    private Date fechaCreacionEvento;
 
 }
