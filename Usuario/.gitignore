@@ -38,3 +38,4 @@ out/
 
 ### Archivos sensibles ###
 .env
+**/.DS_Store
