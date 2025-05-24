@@ -13,7 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "evento")
+@Table(name = "Evento")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,7 +37,7 @@ public class Evento {
     private Date fecha_fin_evento;
 
     @Column(name = "capacidad_maxima_evento", nullable = false, length = 100)
-    private String capacidad_maxima_evento;
+    private int capacidad_maxima_evento;
 
     @Column(name = "costo_entrada_evento", nullable = false, length = 100)
     private int costo_entrada_evento;
