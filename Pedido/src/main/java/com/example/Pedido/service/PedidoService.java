@@ -43,6 +43,21 @@ public class PedidoService {
         }
     }
 
+    public Pedido crearPedidoConUsuarioYEvento(int usuarioId, int eventoId) {
+    Pedido pedido = new Pedido();
+    pedido.setUsuarioId(usuarioId);
+    pedido.setEventoId(eventoId);
+    return pedidoRepository.save(pedido);
+    }
+
+    public List<Pedido> getPedidosByUsuarioId(int usuarioId) {
+        return pedidoRepository.findByUsuarioId(usuarioId);
+    }
+
+    public List<Pedido> getPedidosByEventoId(int eventoId) {
+        return pedidoRepository.findByEventoId(eventoId);
+    }
+
 
 
 }

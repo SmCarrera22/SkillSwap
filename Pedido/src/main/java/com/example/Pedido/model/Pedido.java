@@ -26,6 +26,12 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idPedido;
 
+    @Column(name = "usuario_id")
+    private int usuarioId;
+    
+    @Column(name = "evento_id")
+    private int eventoId;
+
     @Column(name = "fecha_pedido")
     private Date fechaPedido;
 
