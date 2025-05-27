@@ -2,7 +2,6 @@ package com.example.Pedido.service;
 
 import java.util.List;
 
-import org.apache.logging.log4j.spi.ObjectThreadContextMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
