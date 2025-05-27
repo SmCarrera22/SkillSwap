@@ -32,17 +32,17 @@ public class UsuarioController {
         return usuarioService.addUsuario(usuario);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public Usuario getUsuario(@PathVariable("id") int id) {
         return usuarioService.getUsuarioById(id);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public Usuario putMethodName(@PathVariable("id") int id, @RequestBody Usuario usuario) {
         return usuarioService.updateUsuario(usuario);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void deleteUsuario(@PathVariable("id") int id) {
         usuarioService.deleteUsuario(id);
     }

@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Pedido.model.Pedido;
+import com.example.Pedido.model.PedidoRequest;
 import com.example.Pedido.service.PedidoService;
 
 
@@ -61,4 +63,10 @@ public class PedidoController {
         pedidoService.deletePedido(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @PostMapping("/crear")
+    public Pedido crearPedido(@RequestBody PedidoRequest request) {
+        return pedidoService.crearPedidoConUsuarioYEvento(request.getUsuarioId(), request.getEventoId());
+    }
+    
 }
