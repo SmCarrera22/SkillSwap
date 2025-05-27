@@ -33,23 +33,23 @@ public class UsuarioController {
     }
 
     @GetMapping("{id}")
-    public Usuario getUsuario(@PathVariable int id) {
+    public Usuario getUsuario(@PathVariable("id") int id) {
         return usuarioService.getUsuarioById(id);
     }
 
     @PutMapping("{id}")
-    public Usuario putMethodName(@PathVariable int id, @RequestBody Usuario usuario) {
+    public Usuario putMethodName(@PathVariable("id") int id, @RequestBody Usuario usuario) {
         return usuarioService.updateUsuario(usuario);
     }
 
     @DeleteMapping("{id}")
-    public void deleteUsuario(@PathVariable int id) {
+    public void deleteUsuario(@PathVariable("id") int id) {
         usuarioService.deleteUsuario(id);
     }
 
-    @GetMapping("/Nombre/{Nombre}")
-    public Usuario getByNombre(@PathVariable String Nombre) {
-        System.out.println("Nombre: " + Nombre);
-        return usuarioService.getUsuarioByNombre(Nombre);
+    @GetMapping("/Nombre/{nombre}")
+    public Usuario getByNombre(@PathVariable("nombre") String nombre) {
+        System.out.println("Nombre: " + nombre);
+        return usuarioService.getUsuarioByNombre(nombre);
     }
 }
