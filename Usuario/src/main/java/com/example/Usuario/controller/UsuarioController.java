@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Usuario.model.Usuario;
@@ -52,4 +53,14 @@ public class UsuarioController {
         System.out.println("Nombre: " + nombre);
         return usuarioService.getUsuarioByNombre(nombre);
     }
+
+    @GetMapping("/buscar")
+
+  public List<Usuario> buscarUsuarios(@RequestParam("nombre") String nombre) {
+
+    // Llamamos al servicio para buscar los usuarios con nombre similar
+
+    return usuarioService.buscarUsuariosPorNombre(nombre);
+
+  }
 }
