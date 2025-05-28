@@ -39,7 +39,7 @@ public class PedidoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Pedido> getPedidoById(@PathVariable int id) {
+    public ResponseEntity<Pedido> getPedidoById(@PathVariable("id") int id) {
         Pedido pedido = pedidoService.getPedidoById(id);
         if (pedido != null) {
             return new ResponseEntity<>(pedido, HttpStatus.OK);
@@ -49,7 +49,7 @@ public class PedidoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Pedido> updatePedido(@PathVariable int id, @RequestBody Pedido updatedPedido) {
+    public ResponseEntity<Pedido> updatePedido(@PathVariable("id") int id, @RequestBody Pedido updatedPedido) {
         Pedido pedido = pedidoService.updatePedido(id, updatedPedido);
         if (pedido != null) {
             return new ResponseEntity<>(pedido, HttpStatus.OK);
@@ -58,7 +58,7 @@ public class PedidoController {
         }
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePedido(@PathVariable int id) {
+    public ResponseEntity<Void> deletePedido(@PathVariable("id") int id) {
         pedidoService.deletePedido(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -66,6 +66,12 @@ public class PedidoController {
     @PostMapping("/crear")
     public Pedido crearPedido(@RequestBody PedidoRequest request) {
         return pedidoService.crearPedidoConUsuarioYEvento(request.getUsuarioId(), request.getEventoId());
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<Pedido>> getPedidosByUsuarioId(@PathVariable("usuarioId") int usuarioId) {
+        List<Pedido> pedidos = pedidoService.getPedidosByUsuarioId(usuarioId);
+        return new ResponseEntity<>(pedidos, HttpStatus.OK);
     }
     
 }
