@@ -1,4 +1,4 @@
-package com.example.Usuario.Controller;
+package com.example.Usuario.controller;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.Usuario.Services.UsuarioService;
-import com.example.Usuario.Model.Usuario;
+import com.example.Usuario.service.UsuarioService;
+import com.example.Usuario.model.Usuario;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
