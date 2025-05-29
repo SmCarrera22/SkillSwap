@@ -33,18 +33,18 @@ public class EventoController {
     }
 
     @PutMapping("/{id}")
-    public Evento updateEvento(@PathVariable int id, @RequestBody Evento evento) {
+    public Evento updateEvento(@PathVariable("id") int id, @RequestBody Evento evento) {
         evento.setId_evento(id);
         return eventoService.updateEvento(evento);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteEvento(@PathVariable int id) {
+    public void deleteEvento(@PathVariable("id") int id) {
         eventoService.deleteEvento(id);
     }
 
     @GetMapping("/nombre/{nombre}")
-    public Evento getByNombre(@PathVariable String nombre) {
+    public Evento getByNombre(@PathVariable("nombre") String nombre) {
         return eventoService.getEventoByNombre(nombre);
     }
 
@@ -56,12 +56,12 @@ public class EventoController {
     }
 
     @GetMapping("/costo")
-    public List<Evento> getByCosto(@RequestParam("max") int costoMaximo) {
+    public List<Evento> getByCosto(@RequestParam("costoMaximo") int costoMaximo) {
         return eventoService.getEventosPorCostoMaximo(costoMaximo);
     }
 
     @GetMapping("/capacidad")
-    public List<Evento> getByCapacidad(@RequestParam("min") int capacidadMinima) {
+    public List<Evento> getByCapacidad(@RequestParam("capacidadMinima") int capacidadMinima) {
         return eventoService.getEventosPorCapacidadMinima(capacidadMinima);
     }
 
