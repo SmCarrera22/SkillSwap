@@ -24,20 +24,20 @@ public class Usuario {
     private int id;
 
     @Column(name = "Nombre", length = 100, nullable = false)
-    private String Nombre;
+    private String nombre;
 
     @Column(name = "Email", unique = true, length = 100, nullable = false)
-    private String Email;
+    private String email;
 
     @Column(name = "Contraseña", unique = true, length = 100, nullable = false)
-    private String Contraseña;
+    private String contraseña;
 
     @Column(name = "Fecha_Registro", nullable = false)
-    private LocalDate Fecha_Registro;
+    private LocalDate fechaRegistro;
 
     @Column(name = "Direccion", unique = true, length = 200, nullable = false)
-    private String Direccion;
+    private String direccion;
 
     @Column(name = "Telefono", unique = true, length = 20, nullable = false)
-    private String Telefono;
+    private String telefono;
 }
