@@ -44,4 +44,9 @@ public class UsuarioService {
         return null;
     }
     
+    public List<Usuario> buscarUsuariosPorNombre(String nombre) {
+
+    return usuarioRepository.buscarPorNombre(nombre);
+
+  }
 }
