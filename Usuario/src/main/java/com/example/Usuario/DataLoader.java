@@ -21,7 +21,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Faker faker = new Faker();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             Usuario usuario = new Usuario();
             usuario.setNombre(faker.name().fullName());
             usuario.setEmail(faker.internet().emailAddress());
