@@ -16,14 +16,25 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.Usuario.model.Usuario;
 import com.example.Usuario.service.UsuarioService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/v1/usuarios")
+@Tag(name = "Usuarios", description = "API para gestionar usuarios")
 public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
 
     @GetMapping("")
+    @Operation(summary = "Obtener todos los usuarios", description = "Devuelve una lista de todos los usuarios registrados")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida correctamente"),
+        @ApiResponse(responseCode = "400", description = "Error interno del servidor")
+    })
     public List<Usuario> getUsuarios() {
         return usuarioService.getUsuarios();
     }
