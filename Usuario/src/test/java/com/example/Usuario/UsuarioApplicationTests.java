@@ -42,4 +42,9 @@ class UsuarioApplicationTests {
     );
     assertThat(response).contains("["); // Esperamos un JSON tipo lista :contentReference[oaicite:1]{index=1}
   }
+
+
+
+
+
 }

@@ -21,7 +21,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Faker faker = new Faker();
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 2; i++) {
             Usuario usuario = new Usuario();
             usuario.setNombre(faker.name().fullName());
             usuario.setEmail(faker.internet().emailAddress());
@@ -29,7 +29,16 @@ public class DataLoader implements CommandLineRunner {
             usuario.setFechaRegistro(LocalDate.now());
             usuario.setDireccion(faker.address().fullAddress());
             usuario.setTelefono(faker.phoneNumber().phoneNumber());
-            usuarioRepository.save(usuario);
+
+            System.out.println("Usuario generado: " + usuario);
+
+            // Guardar el usuario en la base de datos
+            try {
+                usuarioRepository.save(usuario);
+            } catch (org.springframework.dao.DataIntegrityViolationException e) {
+                // Handle the exception
+                System.err.println("Data integrity violation occurred: " + e.getMessage());
+            }
         }
     }
 
