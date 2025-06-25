@@ -1,6 +1,6 @@
 package com.example.Evento.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,10 +31,10 @@ public class Evento {
     private String descripcionEvento;
 
     @Column(name = "fecha_inicio_evento", nullable = false, length = 100)
-    private Date fechaInicioEvento;
+    private LocalDate fechaInicioEvento;
     
     @Column(name = "fecha_fin_evento", nullable = false, length = 100)
-    private Date fechaFinEvento;
+    private LocalDate fechaFinEvento;
 
     @Column(name = "capacidad_maxima_evento", nullable = false, length = 100)
     private int capacidadMaximaEvento;
@@ -43,6 +43,6 @@ public class Evento {
     private int costoEntradaEvento;
 
     @Column(name = "fecha_creacion_evento", nullable = false, length = 100)
-    private Date fechaCreacionEvento;
+    private LocalDate fechaCreacionEvento;
 
 }

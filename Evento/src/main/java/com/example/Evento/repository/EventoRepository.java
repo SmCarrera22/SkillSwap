@@ -1,6 +1,6 @@
 package com.example.Evento.repository;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,7 +14,7 @@ public interface EventoRepository extends JpaRepository<Evento, Integer> {
     Evento findByNombreEvento(String nombre_evento);
 
     @Query("SELECT e FROM Evento e WHERE e.fechaInicioEvento >= :fechaInicio AND e.fechaFinEvento <= :fechaFin")
-    List<Evento> findEventosByFecha(@Param("fechaInicio") Date fechaInicio, @Param("fechaFin") Date fechaFin);
+    List<Evento> findEventosByFecha(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
 
 
     @Query("SELECT e FROM Evento e WHERE e.costoEntradaEvento <= :costoMaximo")

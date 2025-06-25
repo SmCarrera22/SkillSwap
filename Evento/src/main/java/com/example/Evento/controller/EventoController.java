@@ -1,6 +1,6 @@
 package com.example.Evento.controller;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,7 @@ public class EventoController {
 
     @PostMapping("")
     public Evento addEvento(@RequestBody Evento evento) {
+        System.out.println("Evento creado con éxito: " + evento);
         return eventoService.addEvento(evento);
     }
 
@@ -50,8 +51,8 @@ public class EventoController {
 
     @GetMapping("/fecha")
     public List<Evento> getByFechas(
-            @RequestParam("inicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date inicio,
-            @RequestParam("fin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fin) {
+            @RequestParam("inicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
+            @RequestParam("fin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fin) {
         return eventoService.getEventosPorRangoDeFechas(inicio, fin);
     }
 
