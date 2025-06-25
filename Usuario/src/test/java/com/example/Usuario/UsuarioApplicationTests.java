@@ -16,6 +16,8 @@ import net.datafaker.Faker;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -76,15 +78,15 @@ class UsuarioApplicationTests {
     assertThat(response).contains("Ja"); 
 }
 
-  // Verifica que el endpoint /api/v1/usuarios/Nombre/{nombre} devuelve un usuario por nombre exacto
   @Test
   @Order(6)
   void getUsuarioByNombreExactoReturnsUsuario() {
     Faker faker = new Faker();
 
-    // Generar un nombre con faker para no tener problemas de duplicidad
-    String nombre = faker.name().firstName(); // Ej: "Carlos"
+    // Generar un nombre simple
+    String nombre = faker.name().firstName().replaceAll("[^a-zA-Z]", ""); // Ej: "Carlos"
 
+    // Crear usuario con ese nombre
     Usuario usuario = new Usuario();
     usuario.setNombre(nombre);
     usuario.setEmail(faker.internet().emailAddress());
@@ -93,21 +95,23 @@ class UsuarioApplicationTests {
     usuario.setDireccion(faker.address().fullAddress());
     usuario.setTelefono(faker.phoneNumber().phoneNumber());
 
+    // Insertar usuario
     this.restTemplate.postForObject(
         "http://localhost:" + port + "/api/v1/usuarios",
         usuario,
         Usuario.class
     );
 
-    // Llamada directa sin codificación
+    // Llamada sin codificar el nombre
     String response = this.restTemplate.getForObject(
         "http://localhost:" + port + "/api/v1/usuarios/Nombre/" + nombre,
         String.class
     );
 
-    // Verificar que el nombre está presente
+    // Verificar que el nombre está presente en la respuesta
     assertThat(response).contains("\"nombre\":\"" + nombre + "\"");
 }
+
 
 
 

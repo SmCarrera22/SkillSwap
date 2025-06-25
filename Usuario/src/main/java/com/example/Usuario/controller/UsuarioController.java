@@ -66,7 +66,7 @@ public class UsuarioController {
         usuarioService.deleteUsuario(id);
     }
 
-    @GetMapping("/Nombre/{Nombre}")
+    @GetMapping("/Nombre/{nombre}")
     public Usuario getByNombre(@PathVariable("nombre") String nombre) {
         System.out.println("Nombre: " + nombre);
         return usuarioService.getUsuarioByNombre(nombre);
