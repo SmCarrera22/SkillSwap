@@ -1,5 +1,6 @@
 package com.example.Usuario;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 
 class UsuarioApplicationTests {
@@ -27,6 +30,24 @@ class UsuarioApplicationTests {
   private int port;
   @Autowired
   private TestRestTemplate restTemplate;
+  @Autowired
+  private JdbcTemplate jdbcTemplate;
+
+  @BeforeEach
+  public void setupDatabase(){
+    // Limpiar la tabla de usuarios antes de cada prueba
+    jdbcTemplate.execute("DELETE FROM usuario");
+    jdbcTemplate.execute("""
+        Create table if not exists usuario (
+            id SERIAL PRIMARY KEY,
+            nombre VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            contraseña VARCHAR(255) NOT NULL,
+            fecha_registro DATE NOT NULL,
+            direccion VARCHAR(255),
+            telefono VARCHAR(20)
+        """);
+  }
 
   // Verifica que el contexto de Spring arranca correctamente
   @Test
