@@ -23,6 +23,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.Collections;
+
 @RestController
 @RequestMapping("/api/v1/usuarios")
 @Tag(name = "Usuarios", description = "API para gestionar usuarios")
@@ -88,5 +90,11 @@ public class UsuarioController {
     public ResponseEntity<List<Usuario>> buscarUsuarios(@RequestParam("nombre") String nombre) {
         List<Usuario> usuarios = usuarioService.buscarUsuariosPorNombre(nombre);
         return ResponseEntity.ok(usuarios);
+    }
+
+    @GetMapping("/vaciar")
+    public ResponseEntity<List<Usuario>> getListaVacia() {
+        List<Usuario> listaVacia = Collections.emptyList();
+        return ResponseEntity.ok(listaVacia); // Retorna 200 OK con []
     }
 }

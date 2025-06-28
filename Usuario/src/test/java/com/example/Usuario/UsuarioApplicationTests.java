@@ -8,8 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import com.example.Usuario.controller.UsuarioController;
 import com.example.Usuario.model.Usuario;
@@ -21,9 +25,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@AutoConfigureMockMvc
 
 class UsuarioApplicationTests {
   @Autowired
@@ -34,6 +41,8 @@ class UsuarioApplicationTests {
   private TestRestTemplate restTemplate;
   @Autowired
   private JdbcTemplate jdbcTemplate;
+  @Autowired
+  private MockMvc mockMvc;
 
   @BeforeAll
   public void setupDatabase(){
@@ -236,4 +245,13 @@ class UsuarioApplicationTests {
 
     assertThat(response).doesNotContain("\"id\":" + creado.getId());
 }
+  @Test
+  @Order(10)
+  public void testListaVaciaEndpoint() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/usuarios/vaciar"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$.length()").value(0));
+    }
 }
