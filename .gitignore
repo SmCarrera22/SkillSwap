@@ -37,5 +37,6 @@ out/
 .vscode/
 
 ### Archivos sensibles ###
+secrets-dev.properties
 .env
 **/.DS_Store
