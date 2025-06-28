@@ -67,7 +67,7 @@ public class UsuarioController {
 
     @GetMapping("/buscar")
 
-  public List<Usuario> buscarUsuarios(@RequestParam("nombre") String nombre) {
+    public List<Usuario> buscarUsuarios(@RequestParam("nombre") String nombre) {
 
     // Llamamos al servicio para buscar los usuarios con nombre similar
 
