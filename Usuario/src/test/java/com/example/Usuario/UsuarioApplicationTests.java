@@ -1,8 +1,9 @@
 package com.example.Usuario;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -24,6 +25,7 @@ import java.time.LocalDate;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 
 class UsuarioApplicationTests {
   @Autowired
@@ -35,10 +37,11 @@ class UsuarioApplicationTests {
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
-  @BeforeEach
+  @BeforeAll
   public void setupDatabase(){
-    // Limpiar la tabla de usuarios antes de cada prueba
-    jdbcTemplate.execute("DELETE FROM usuario");
+    // Limpiar la tabla de usuarios antes de las pruebas
+    Faker faker = new Faker();
+    jdbcTemplate.execute("DROP TABLE IF EXISTS usuario");
     jdbcTemplate.execute("""
         Create table if not exists usuario (
             id SERIAL PRIMARY KEY,
@@ -48,7 +51,19 @@ class UsuarioApplicationTests {
             fecha_registro DATE NOT NULL,
             direccion VARCHAR(255),
             telefono VARCHAR(20)
+            );
         """);
+    jdbcTemplate.update("""
+        INSERT INTO usuario (nombre, email, contraseña, fecha_registro, direccion, telefono)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        faker.name().fullName(),
+        faker.internet().emailAddress(),
+        faker.internet().password(),
+        LocalDate.now(),
+        faker.address().fullAddress(),
+        faker.phoneNumber().phoneNumber()
+    );
   }
 
   // Verifica que el contexto de Spring arranca correctamente
@@ -91,12 +106,12 @@ class UsuarioApplicationTests {
   @Test
   @Order(5)
   void buscarUsuariosPorNombreParcial() {
-    String nombreBusqueda = "Ja"; // búsqueda parcial
+    String nombreBusqueda = "ja"; // búsqueda parcial
     String response = this.restTemplate.getForObject(
         "http://localhost:" + port + "/api/v1/usuarios/buscar?nombre=" + nombreBusqueda,
         String.class
     );
-    assertThat(response).contains("Ja"); 
+    assertThat(response).contains("ja"); 
 }
 
   @Test
@@ -168,7 +183,10 @@ class UsuarioApplicationTests {
     );
 
     // Generar nuevo nombre aleatorio con Faker
-    String nuevoNombre = faker.name().fullName();
+    String nuevoNombre; 
+      do{
+      nuevoNombre = faker.name().firstName();
+    } while(!nuevoNombre.contains("ja"));
     usuario.setNombre(nuevoNombre);
 
     // Enviar PUT (no devuelve respuesta)
