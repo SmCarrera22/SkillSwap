@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -102,41 +103,200 @@ public ResponseEntity<Usuario> addUsuario(@RequestBody Usuario usuario) {
 
 
 
+@Operation(
+    summary = "Obtener usuario por ID",
+    description = "Busca y devuelve un usuario según su identificador único"
+)
+@ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Usuario encontrado",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(implementation = Usuario.class)
+        )
+    ),
+    @ApiResponse(
+        responseCode = "404",
+        description = "Usuario no encontrado"
+    )
+})
+
 @GetMapping("/{id}")
-public ResponseEntity<Usuario> getUsuario(@PathVariable("id") int id) {
+public ResponseEntity<Usuario> getUsuario(
+    @Parameter(description = "ID del usuario a buscar", required = true)
+    @PathVariable("id") int id
+) {
     Usuario usuario = usuarioService.getUsuarioById(id);
     if (usuario != null) {
         return ResponseEntity.ok(usuario);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    } else {
+        return ResponseEntity.notFound().build();
     }
+}
 
     
-    @PutMapping("/{id}")
-    public ResponseEntity<Usuario> updateUsuario(@PathVariable("id") int id, @RequestBody Usuario usuario) {
-        Usuario actualizado = usuarioService.updateUsuario(usuario);
-        if (actualizado != null) {
-            return ResponseEntity.ok(actualizado);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    
+  @Operation(
+    summary = "Actualizar un usuario existente",
+    description = "Actualiza los datos de un usuario según su ID",
+    parameters = {
+        @Parameter(
+            name = "id",
+            description = "ID del usuario a actualizar",
+            required = true,
+            example = "1"
+        )
+    },
+    requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        description = "Datos actualizados del usuario",
+        required = true,
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(implementation = Usuario.class),
+            examples = @ExampleObject(
+                name = "EjemploUsuarioActualizado",
+                value = "{ \"nombre\": \"Pedro Actualizado\", \"correo\": \"pedro.actualizado@mail.com\", \"contrasena\": \"nueva123\" }"
+            )
+        )
+    )
+)
+@ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Usuario actualizado correctamente",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(implementation = Usuario.class)
+        )
+    ),
+    @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+    @ApiResponse(responseCode = "400", description = "Datos inválidos")
+})
+@PutMapping("/{id}")
+public ResponseEntity<Usuario> updateUsuario(@PathVariable("id") int id, @RequestBody Usuario usuario) {
+    Usuario actualizado = usuarioService.updateUsuario(usuario);
+    if (actualizado != null) {
+        return ResponseEntity.ok(actualizado);
+    } else {
+        return ResponseEntity.notFound().build();
     }
+}
 
-    @DeleteMapping("{id}")
-    public void deleteUsuario(@PathVariable("id") int id) {
-        usuarioService.deleteUsuario(id);
-    }
 
-    @GetMapping("/Nombre/{nombre}")
-    public Usuario getByNombre(@PathVariable("nombre") String nombre) {
-        System.out.println("Nombre: " + nombre);
-        return usuarioService.getUsuarioByNombre(nombre);
+@Operation(
+    summary = "Eliminar un usuario",
+    description = "Elimina un usuario del sistema según su ID",
+    parameters = {
+        @Parameter(
+            name = "id",
+            description = "ID del usuario a eliminar",
+            required = true,
+            example = "1"
+        )
     }
+)
+@ApiResponses({
+    @ApiResponse(
+        responseCode = "204",
+        description = "Usuario eliminado exitosamente"
+    ),
+    @ApiResponse(
+        responseCode = "404",
+        description = "Usuario no encontrado"
+    )
+})
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> deleteUsuario(@PathVariable("id") int id) {
+    usuarioService.deleteUsuario(id);
+    return ResponseEntity.noContent().build();
+}
 
-    @GetMapping("/buscar")
-    public List<Usuario> buscarUsuarios(@RequestParam("nombre") String nombre) {
-        // Llamamos al servicio para buscar los usuarios con nombre similar
-        return usuarioService.buscarUsuariosPorNombre(nombre);
+
+   @Operation(
+    summary = "Buscar usuario por nombre",
+    description = "Obtiene un usuario específico usando su nombre",
+    parameters = {
+        @Parameter(
+            name = "nombre",
+            description = "Nombre del usuario a buscar",
+            required = true,
+            example = "Pedro"
+        )
     }
+)
+@ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Usuario encontrado",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(implementation = Usuario.class)
+        )
+    ),
+    @ApiResponse(
+        responseCode = "404",
+        description = "Usuario no encontrado"
+    )
+})
+@GetMapping("/Nombre/{nombre}")
+public ResponseEntity<Usuario> getByNombre(@PathVariable("nombre") String nombre) {
+    Usuario usuario = usuarioService.getUsuarioByNombre(nombre);
+    if (usuario != null) {
+        return ResponseEntity.ok(usuario);
+    } else {
+        return ResponseEntity.notFound().build();
+    }
+}
+
+
+    @Operation(
+    summary = "Buscar usuarios por nombre parcial",
+    description = "Devuelve una lista de usuarios cuyo nombre contenga el valor proporcionado",
+    parameters = {
+        @Parameter(
+            name = "nombre",
+            description = "Nombre (o parte del nombre) a buscar",
+            required = true,
+            example = "na"
+        )
+    }
+)
+@ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Lista de usuarios encontrada",
+        content = @Content(
+            mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = Usuario.class))
+        )
+    ),
+    @ApiResponse(responseCode = "400", description = "Parámetro inválido")
+})
+@GetMapping("/buscar")
+public ResponseEntity<List<Usuario>> buscarUsuarios(@RequestParam("nombre") String nombre) {
+    List<Usuario> usuarios = usuarioService.buscarUsuariosPorNombre(nombre);
+    return ResponseEntity.ok(usuarios);
+}
+
+
+    @Operation(
+    summary = "Obtener lista vacía de usuarios",
+    description = "Devuelve una lista vacía, útil para pruebas o ejemplos"
+)
+@ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Lista vacía devuelta exitosamente",
+        content = @Content(
+            mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = Usuario.class))
+        )
+    )
+})
+@GetMapping("/vaciar")
+public ResponseEntity<List<Usuario>> getListaVacia() {
+    List<Usuario> listaVacia = Collections.emptyList();
+    return ResponseEntity.ok(listaVacia);
+}
 }
