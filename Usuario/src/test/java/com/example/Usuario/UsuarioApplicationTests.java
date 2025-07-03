@@ -60,6 +60,7 @@ class UsuarioApplicationTests {
             telefono VARCHAR(20)
             );
         """);
+    for (int i = 0; i < 10; i++) {
     jdbcTemplate.update("""
         INSERT INTO usuario (nombre, email, contraseña, fecha_registro, direccion, telefono)
         VALUES (?, ?, ?, ?, ?, ?)
@@ -71,6 +72,7 @@ class UsuarioApplicationTests {
         faker.address().fullAddress(),
         faker.phoneNumber().phoneNumber()
     );
+    };
   }
 
   // Verifica que el contexto de Spring arranca correctamente
