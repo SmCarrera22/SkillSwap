@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.Usuario.controller.UsuarioController;
 import com.example.Usuario.model.Usuario;
+import com.example.Usuario.repository.UsuarioRepository;
 
 import net.datafaker.Faker;
 
@@ -43,6 +44,8 @@ class UsuarioApplicationTests {
   private JdbcTemplate jdbcTemplate;
   @Autowired
   private MockMvc mockMvc;
+  @Autowired
+  private UsuarioRepository usuarioRepository;
 
   @BeforeAll
   public void setupDatabase(){
@@ -256,4 +259,13 @@ class UsuarioApplicationTests {
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$.length()").value(0));
     }
+
+  @Test
+  @Order(11)
+  public void contarUsuarios(){
+    long totalUsuarios = usuarioRepository.count();
+    assertThat(totalUsuarios).isGreaterThan(0); // Verifica que hay al menos un usuario
+    System.out.println("Total de usuarios en la base de datos: " + totalUsuarios);
+  }
+  
 }
