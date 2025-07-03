@@ -12,7 +12,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("API 2026 SkillSwap")
-                        .version("1.0.0")
-                        .description("API for managing user information"));
+                        .version("1.0")
+                        .description("Documentacion de la API de SkillSwap 2026"));
     }
 }
