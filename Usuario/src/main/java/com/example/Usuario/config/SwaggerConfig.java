@@ -11,15 +11,9 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-            .info(new Info()
-                .title("API 2026 SkillSwap")
-                .version("1.0")
-                .description("Documentación de la API de SkillSwap 2026")
-                .contact(new Contact()
-                    .name("Equipo de Soporte SkillSwap")
-                    .email("soporte@skillswap.com")
-                    .url("https://skillswap.com/soporte")
-                )
-            );
+                .info(new Info()
+                        .title("API 2026 SkillSwap")
+                        .version("1.0")
+                        .description("Documentacion de la API de SkillSwap 2026"));
     }
 }
