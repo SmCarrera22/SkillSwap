@@ -195,7 +195,7 @@ public EntityModel<Map<String, String>> getBasicApiIndex() {
 // Agregar un nuevo usuario con enlaces HATEOAS
 @Operation(
     summary = "Agregar un nuevo usuario",
-    description = "Crea un nuevo usuario en el sistema",
+    description = "Crea un nuevo usuario en el sistema y devuelve el recurso con enlaces HATEOAS",
     requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
         description = "Datos del usuario a registrar",
         required = true,
@@ -204,7 +204,15 @@ public EntityModel<Map<String, String>> getBasicApiIndex() {
             schema = @Schema(implementation = Usuario.class),
             examples = @ExampleObject(
                 name = "EjemploUsuario",
-                value = "{ \"nombre\": \"Pedro\", \"correo\": \"pedro@mail.com\", \"contrasena\": \"12345\" }"
+                value = """
+                {
+                    "nombre": "Pedro",
+                    "email": "pedro@mail.com",
+                    "contraseña": "12345",
+                    "fechaRegistro": "2025-07-05",
+                    "direccion": "Calle Falsa 123",
+                    "telefono": "123456789"
+                }"""
             )
         )
     )
@@ -214,16 +222,42 @@ public EntityModel<Map<String, String>> getBasicApiIndex() {
         responseCode = "201",
         description = "Usuario creado exitosamente",
         content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(implementation = Usuario.class)
+            mediaType = MediaTypes.HAL_JSON_VALUE,
+            schema = @Schema(implementation = Usuario.class),
+            examples = @ExampleObject(
+                value = """
+                {
+                    "id": 1,
+                    "nombre": "Pedro",
+                    "email": "pedro@mail.com",
+                    "_links": {
+                        "self": { 
+                            "href": "/api/v1/usuarios/1",
+                            "type": "GET"
+                        },
+                        "todos-usuarios": { 
+                            "href": "/api/v1/usuarios",
+                            "type": "GET"
+                        }
+                    }
+                }"""
+            )
         )
     ),
-    @ApiResponse(responseCode = "400", description = "Datos inválidos")
+    @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+    @ApiResponse(responseCode = "409", description = "El email ya está registrado")
 })
-@PostMapping("")
-public ResponseEntity<Usuario> addUsuario(@RequestBody Usuario usuario) {
+@PostMapping(produces = MediaTypes.HAL_JSON_VALUE)
+public ResponseEntity<EntityModel<Usuario>> addUsuario(@Valid @RequestBody Usuario usuario) {
     Usuario nuevoUsuario = usuarioService.addUsuario(usuario);
-    return new ResponseEntity<>(nuevoUsuario, HttpStatus.CREATED);
+    
+    // Construcción del modelo HATEOAS con el assembler + enlaces adicionales
+    EntityModel<Usuario> model = assembler.toModel(nuevoUsuario)
+        .add(linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("todos-usuarios"));
+    
+    return ResponseEntity
+        .created(linkTo(methodOn(UsuarioControllerV2.class).getUsuario(nuevoUsuario.getId())).toUri())
+        .body(model);
 }
 
         
