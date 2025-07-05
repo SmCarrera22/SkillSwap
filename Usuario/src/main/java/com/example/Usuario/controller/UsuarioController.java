@@ -3,6 +3,8 @@ package com.example.Usuario.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,14 +24,26 @@ import com.example.Usuario.service.UsuarioService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.Instant;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import org.springframework.hateoas.Link;
+
+
+
 
 //@RestController
 @RequestMapping("/api/v1/usuarios")
@@ -100,87 +114,60 @@ public ResponseEntity<Usuario> addUsuario(@RequestBody Usuario usuario) {
 
 
 
-@Operation(
-    summary = "Obtener usuario por ID",
-    description = "Busca y devuelve un usuario según su identificador único"
-)
-@ApiResponses({
-    @ApiResponse(
-        responseCode = "200",
-        description = "Usuario encontrado",
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(implementation = Usuario.class)
-        )
-    ),
-    @ApiResponse(
-        responseCode = "404",
-        description = "Usuario no encontrado"
-    )
-})
+@PutMapping(value = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
+public ResponseEntity<?> updateUsuario(
+    @PathVariable("id") int id,
+    @Valid @RequestBody Usuario usuario) {
 
-@GetMapping("/{id}")
-public ResponseEntity<Usuario> getUsuario(
-    @Parameter(description = "ID del usuario a buscar", required = true)
-    @PathVariable("id") int id
-) {
-    Usuario usuario = usuarioService.getUsuarioById(id);
-    if (usuario != null) {
-        return ResponseEntity.ok(usuario);
-    } else {
-        return ResponseEntity.notFound().build();
+    try {
+        // 1. Validar y actualizar
+        if (usuario == null) {
+            throw new IllegalArgumentException("El usuario no puede ser nulo");
+        }
+        usuario.setId(id);
+        Usuario actualizado = usuarioService.updateUsuario(usuario);
+
+        // 2. Construir enlaces HATEOAS
+        Link selfLink = linkTo(methodOn(UsuarioControllerV2.class).updateUsuario(id, usuario)).withSelfRel();
+        Link getLink = linkTo(methodOn(UsuarioControllerV2.class).getUsuario(id)).withRel("get");
+        Link deleteLink = linkTo(methodOn(UsuarioControllerV2.class).deleteUsuario(id)).withRel("delete");
+        Link allUsersLink = linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("usuarios");
+
+        // 3. Construir modelo de respuesta
+        EntityModel<Usuario> model = EntityModel.of(actualizado);
+        model.add(selfLink, getLink, deleteLink, allUsersLink);
+
+        // 4. Retornar respuesta
+        return ResponseEntity.ok(model);
+
+    } catch (EntityNotFoundException ex) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, 
+            "Usuario no encontrado con ID: " + id,
+            linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("usuarios"));
+    } catch (IllegalArgumentException ex) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, 
+            ex.getMessage(),
+            linkTo(methodOn(UsuarioControllerV2.class).updateUsuario(id, usuario)).withSelfRel());
+    } catch (Exception ex) {
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+            "Error al procesar la solicitud: " + ex.getMessage(),
+            linkTo(methodOn(UsuarioControllerV2.class).getApiIndex()).withRel("index"));
     }
 }
 
+// Método auxiliar para construir respuestas de error
+private ResponseEntity<EntityModel<Map<String, Object>>> buildErrorResponse(
+    HttpStatus status, String errorMessage, Link... links) {
     
+    Map<String, Object> errorBody = new HashMap<>();
+    errorBody.put("error", errorMessage);
+    errorBody.put("timestamp", Instant.now().toString());
     
-  @Operation(
-    summary = "Actualizar un usuario existente",
-    description = "Actualiza los datos de un usuario según su ID",
-    parameters = {
-        @Parameter(
-            name = "id",
-            description = "ID del usuario a actualizar",
-            required = true,
-            example = "1"
-        )
-    },
-    requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-        description = "Datos actualizados del usuario",
-        required = true,
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(implementation = Usuario.class),
-            examples = @ExampleObject(
-                name = "EjemploUsuarioActualizado",
-                value = "{ \"nombre\": \"Pedro Actualizado\", \"correo\": \"pedro.actualizado@mail.com\", \"contrasena\": \"nueva123\" }"
-            )
-        )
-    )
-)
-@ApiResponses({
-    @ApiResponse(
-        responseCode = "200",
-        description = "Usuario actualizado correctamente",
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(implementation = Usuario.class)
-        )
-    ),
-    @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
-    @ApiResponse(responseCode = "400", description = "Datos inválidos")
-})
-@PutMapping("/{id}")
-public ResponseEntity<Usuario> updateUsuario(@PathVariable("id") int id, @RequestBody Usuario usuario) {
-    Usuario actualizado = usuarioService.updateUsuario(usuario);
-    if (actualizado != null) {
-        return ResponseEntity.ok(actualizado);
-    } else {
-        return ResponseEntity.notFound().build();
-    }
+    EntityModel<Map<String, Object>> errorModel = EntityModel.of(errorBody, links);
+    return ResponseEntity.status(status).body(errorModel);
 }
 
-
+// Eliminar un usuario por ID
 @Operation(
     summary = "Eliminar un usuario",
     description = "Elimina un usuario del sistema según su ID",
