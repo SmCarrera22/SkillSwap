@@ -69,6 +69,7 @@ private UsuarioService usuarioService;
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Obtener índice de la API con enlaces HATEOAS
 @Operation(
     summary = "Obtener índice de la API",
@@ -79,10 +80,18 @@ private UsuarioService usuarioService;
     summary = "Índice Básico de Endpoints",
     description = "Muestra los endpoints principales disponibles en la API de Usuarios"
 >>>>>>> 7ea354e (Agregar endpoint para obtener índice básico de la API de Usuarios)
+=======
+// Índice de Endpoints
+@Operation(
+    summary = "Índice de Endpoints",
+    description = "Muestra todos los endpoints disponibles en la API de Usuarios"
+>>>>>>> dfbb093 (Actualizar documentación de la API y mejorar el índice de endpoints)
 )
+
 @ApiResponses({
     @ApiResponse(
         responseCode = "200",
+<<<<<<< HEAD
 <<<<<<< HEAD
         description = "Índice de la API obtenido exitosamente",
         content = @Content(
@@ -134,16 +143,24 @@ private UsuarioService usuarioService;
                         }
 =======
         description = "Directorio básico de endpoints",
+=======
+        description = "Directorio de endpoints",
+>>>>>>> dfbb093 (Actualizar documentación de la API y mejorar el índice de endpoints)
         content = @Content(
-            mediaType = "application/json",
+            mediaType = MediaTypes.HAL_JSON_VALUE,
             examples = @ExampleObject(
                 value = """
                 {
-                    "description": "API de Usuarios - Endpoints disponibles",
+                    "description": "API de Gestión de Usuarios v1.0",
                     "_links": {
                         "self": { "href": "http://localhost:8081/api/v1/usuarios/index" },
+<<<<<<< HEAD
                         "obtener-usuarios": { "href": "http://localhost:8081/api/v1/usuarios" }
 >>>>>>> 7ea354e (Agregar endpoint para obtener índice básico de la API de Usuarios)
+=======
+                        "obtener-usuarios": { "href": "http://localhost:8081/api/v1/usuarios" },
+                        "lista-vacia": { "href": "http://localhost:8081/api/v1/usuarios/vaciar" }
+>>>>>>> dfbb093 (Actualizar documentación de la API y mejorar el índice de endpoints)
                     }
                 }"""
             )
@@ -161,12 +178,18 @@ public EntityModel<Map<String, String>> getBasicApiIndex() {
 @GetMapping("/index")
 public EntityModel<Map<String, String>> getBasicApiIndex() {
     Map<String, String> content = new HashMap<>();
+<<<<<<< HEAD
     content.put("description", "API de Usuarios - Endpoints disponibles");
 >>>>>>> 7ea354e (Agregar endpoint para obtener índice básico de la API de Usuarios)
+=======
+    content.put("description", "API de Gestión de Usuarios v1.0");
+    content.put("version", "1.0");
+>>>>>>> dfbb093 (Actualizar documentación de la API y mejorar el índice de endpoints)
     
     return EntityModel.of(
         content,
         linkTo(methodOn(UsuarioControllerV2.class).getBasicApiIndex()).withSelfRel(),
+<<<<<<< HEAD
 <<<<<<< HEAD
         linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("obtener-usuarios"),
         linkTo(methodOn(UsuarioControllerV2.class).getUsuario(0)).withRel("obtener-usuario")
@@ -196,8 +219,12 @@ public EntityModel<Map<String, String>> getBasicApiIndex() {
 // Obtener todos los usuarios con enlaces HATEOAS
 =======
         linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("obtener-usuarios")
+=======
+        linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("obtener-usuarios"),
+        linkTo(methodOn(UsuarioControllerV2.class).getListaVacia()).withRel("lista-vacia")
+>>>>>>> dfbb093 (Actualizar documentación de la API y mejorar el índice de endpoints)
     );
-}    
+}
 
 
 >>>>>>> 7ea354e (Agregar endpoint para obtener índice básico de la API de Usuarios)
