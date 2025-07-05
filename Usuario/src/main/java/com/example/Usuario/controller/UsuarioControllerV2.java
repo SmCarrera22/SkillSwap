@@ -1,6 +1,7 @@
 package com.example.Usuario.controller;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.Map;
+
+
 @RestController
 @RequestMapping("/api/v1/usuarios")
 @Tag(name = "Usuarios", description = "API para gestionar usuarios")
@@ -47,6 +51,45 @@ private UsuarioService usuarioService;
 
 @Autowired
     private UsuarioModelAssembler assembler;
+
+
+
+@Operation(
+    summary = "Índice Básico de Endpoints",
+    description = "Muestra los endpoints principales disponibles en la API de Usuarios"
+)
+@ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Directorio básico de endpoints",
+        content = @Content(
+            mediaType = "application/json",
+            examples = @ExampleObject(
+                value = """
+                {
+                    "description": "API de Usuarios - Endpoints disponibles",
+                    "_links": {
+                        "self": { "href": "http://localhost:8081/api/v1/usuarios/index" },
+                        "obtener-usuarios": { "href": "http://localhost:8081/api/v1/usuarios" }
+                    }
+                }"""
+            )
+        )
+    )
+})
+
+@GetMapping("/index")
+public EntityModel<Map<String, String>> getBasicApiIndex() {
+    Map<String, String> content = new HashMap<>();
+    content.put("description", "API de Usuarios - Endpoints disponibles");
+    
+    return EntityModel.of(
+        content,
+        linkTo(methodOn(UsuarioControllerV2.class).getBasicApiIndex()).withSelfRel(),
+        linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("obtener-usuarios")
+    );
+}    
+
 
 @Operation(
     summary = "Obtener todos los usuarios",
