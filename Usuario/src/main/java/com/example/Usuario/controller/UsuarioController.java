@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 
 import com.example.Usuario.model.Usuario;
 import com.example.Usuario.service.UsuarioService;
@@ -31,7 +29,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 
-@RestController
+//@RestController
 @RequestMapping("/api/v1/usuarios")
 @Tag(name = "Usuarios", description = "API para gestionar usuarios")
 public class UsuarioController {
@@ -44,56 +42,39 @@ public class UsuarioController {
         @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida correctamente"),
         @ApiResponse(responseCode = "400", description = "Error interno del servidor")
     })
-    public ResponseEntity<List<Usuario>> getUsuarios() {
-        List<Usuario> usuarios = usuarioService.getUsuarios();
-        return ResponseEntity.ok(usuarios);
+    public List<Usuario> getUsuarios() {
+        return usuarioService.getUsuarios();
     }
 
     @PostMapping("")
-    public ResponseEntity<Usuario> addUsuario(@RequestBody Usuario usuario) {
-        Usuario nuevoUsuario = usuarioService.addUsuario(usuario);
-        return new ResponseEntity<>(nuevoUsuario, HttpStatus.CREATED);
+    public Usuario addUsuario(@RequestBody Usuario usuario) {
+        return usuarioService.addUsuario(usuario);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getUsuario(@PathVariable("id") int id) {
-        Usuario usuario = usuarioService.getUsuarioById(id);
-        if (usuario != null) {
-            return ResponseEntity.ok(usuario);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("{id}")
+    public Usuario getUsuario(@PathVariable("id") int id) {
+        return usuarioService.getUsuarioById(id);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Usuario> updateUsuario(@PathVariable("id") int id, @RequestBody Usuario usuario) {
-        Usuario actualizado = usuarioService.updateUsuario(usuario);
-        if (actualizado != null) {
-            return ResponseEntity.ok(actualizado);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @PutMapping("{id}")
+    public Usuario putMethodName(@PathVariable("id") int id, @RequestBody Usuario usuario) {
+        return usuarioService.updateUsuario(usuario);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUsuario(@PathVariable("id") int id) {
+    @DeleteMapping("{id}")
+    public void deleteUsuario(@PathVariable("id") int id) {
         usuarioService.deleteUsuario(id);
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/Nombre/{nombre}")
-    public ResponseEntity<Usuario> getByNombre(@PathVariable("nombre") String nombre) {
-        Usuario usuario = usuarioService.getUsuarioByNombre(nombre);
-        if (usuario != null) {
-            return ResponseEntity.ok(usuario);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public Usuario getByNombre(@PathVariable("nombre") String nombre) {
+        System.out.println("Nombre: " + nombre);
+        return usuarioService.getUsuarioByNombre(nombre);
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<List<Usuario>> buscarUsuarios(@RequestParam("nombre") String nombre) {
-        List<Usuario> usuarios = usuarioService.buscarUsuariosPorNombre(nombre);
-        return ResponseEntity.ok(usuarios);
+    public List<Usuario> buscarUsuarios(@RequestParam("nombre") String nombre) {
+        // Llamamos al servicio para buscar los usuarios con nombre similar
+        return usuarioService.buscarUsuariosPorNombre(nombre);
     }
 }

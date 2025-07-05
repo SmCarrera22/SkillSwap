@@ -8,24 +8,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import com.example.Usuario.controller.UsuarioController;
 import com.example.Usuario.model.Usuario;
+import com.example.Usuario.repository.UsuarioRepository;
 
 import net.datafaker.Faker;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@AutoConfigureMockMvc
 
 class UsuarioApplicationTests {
   @Autowired
@@ -36,6 +42,10 @@ class UsuarioApplicationTests {
   private TestRestTemplate restTemplate;
   @Autowired
   private JdbcTemplate jdbcTemplate;
+  @Autowired
+  private MockMvc mockMvc;
+  @Autowired
+  private UsuarioRepository usuarioRepository;
 
   @BeforeAll
   public void setupDatabase(){
@@ -53,6 +63,7 @@ class UsuarioApplicationTests {
             telefono VARCHAR(20)
             );
         """);
+    for (int i = 0; i < 10; i++) {
     jdbcTemplate.update("""
         INSERT INTO usuario (nombre, email, contraseña, fecha_registro, direccion, telefono)
         VALUES (?, ?, ?, ?, ?, ?)
@@ -64,6 +75,7 @@ class UsuarioApplicationTests {
         faker.address().fullAddress(),
         faker.phoneNumber().phoneNumber()
     );
+    };
   }
 
   // Verifica que el contexto de Spring arranca correctamente
@@ -114,15 +126,15 @@ class UsuarioApplicationTests {
     assertThat(response).contains("ja"); 
 }
 
+  // Verifica que el endpoint /api/v1/usuarios/Nombre/{nombre} devuelve un usuario por nombre exacto
   @Test
   @Order(6)
   void getUsuarioByNombreExactoReturnsUsuario() {
     Faker faker = new Faker();
 
-    // Generar un nombre simple
-    String nombre = faker.name().firstName().replaceAll("[^a-zA-Z]", ""); // Ej: "Carlos"
+    // Generar un nombre con faker para no tener problemas de duplicidad
+    String nombre = faker.name().firstName(); // Ej: "Carlos"
 
-    // Crear usuario con ese nombre
     Usuario usuario = new Usuario();
     usuario.setNombre(nombre);
     usuario.setEmail(faker.internet().emailAddress());
@@ -131,23 +143,21 @@ class UsuarioApplicationTests {
     usuario.setDireccion(faker.address().fullAddress());
     usuario.setTelefono(faker.phoneNumber().phoneNumber());
 
-    // Insertar usuario
     this.restTemplate.postForObject(
         "http://localhost:" + port + "/api/v1/usuarios",
         usuario,
         Usuario.class
     );
 
-    // Llamada sin codificar el nombre
+    // Llamada directa sin codificación
     String response = this.restTemplate.getForObject(
         "http://localhost:" + port + "/api/v1/usuarios/Nombre/" + nombre,
         String.class
     );
 
-    // Verificar que el nombre está presente en la respuesta
+    // Verificar que el nombre está presente
     assertThat(response).contains("\"nombre\":\"" + nombre + "\"");
 }
-
 
 
 
@@ -240,4 +250,22 @@ class UsuarioApplicationTests {
 
     assertThat(response).doesNotContain("\"id\":" + creado.getId());
 }
+  @Test
+  @Order(10)
+  public void testListaVaciaEndpoint() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/usuarios/vaciar"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$.length()").value(0));
+    }
+
+  @Test
+  @Order(11)
+  public void contarUsuarios(){
+    long totalUsuarios = usuarioRepository.count();
+    assertThat(totalUsuarios).isGreaterThan(0); // Verifica que hay al menos un usuario
+    System.out.println("Total de usuarios en la base de datos: " + totalUsuarios);
+  }
+  
 }

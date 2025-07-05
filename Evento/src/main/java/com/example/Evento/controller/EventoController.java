@@ -57,12 +57,12 @@ public class EventoController {
     }
 
     @GetMapping("/costo")
-    public List<Evento> getByCosto(@RequestParam("costoMaximo") int costoMaximo) {
+    public List<Evento> getByCosto(@RequestParam("max") int costoMaximo) {
         return eventoService.getEventosPorCostoMaximo(costoMaximo);
     }
 
     @GetMapping("/capacidad")
-    public List<Evento> getByCapacidad(@RequestParam("capacidadMinima") int capacidadMinima) {
+    public List<Evento> getByCapacidad(@RequestParam("min") int capacidadMinima) {
         return eventoService.getEventosPorCapacidadMinima(capacidadMinima);
     }
 
