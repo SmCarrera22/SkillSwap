@@ -2,8 +2,12 @@ package com.example.Usuario.controller;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Usuario.assemblers.UsuarioModelAssembler;
 import com.example.Usuario.model.Usuario;
 import com.example.Usuario.service.UsuarioService;
 
@@ -29,6 +34,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @RequestMapping("/api/v1/usuarios")
 @Tag(name = "Usuarios", description = "API para gestionar usuarios")
@@ -36,6 +44,9 @@ public class UsuarioControllerV2 {
 
 @Autowired
 private UsuarioService usuarioService;
+
+@Autowired
+    private UsuarioModelAssembler assembler;
 
 @Operation(
     summary = "Obtener todos los usuarios",
@@ -53,10 +64,18 @@ private UsuarioService usuarioService;
     @ApiResponse(responseCode = "400", description = "Error interno del servidor")
 })
 
-@GetMapping("")
-public ResponseEntity<List<Usuario>> getUsuarios() {
-    List<Usuario> usuarios = usuarioService.getUsuarios();
-    return ResponseEntity.ok(usuarios);
+
+
+    @GetMapping
+    public CollectionModel<EntityModel<Usuario>> getUsuarios() {
+        List<EntityModel<Usuario>> usuarios = usuarioService.getUsuarios().stream()
+            .map(assembler::toModel)
+            .collect(Collectors.toList());
+
+    return CollectionModel.of(
+        usuarios,
+        linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withSelfRel()
+    );
 }
 
 

@@ -31,7 +31,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Collections;
 
-@RestController
+//@RestController
 @RequestMapping("/api/v1/usuarios")
 @Tag(name = "Usuarios", description = "API para gestionar usuarios")
 public class UsuarioController {
