@@ -2,6 +2,8 @@ package com.example.Usuario.controller;
 
 
 import java.time.Instant;
+
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +32,6 @@ import com.example.Usuario.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -39,13 +40,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
+import org.springframework.hateoas.Link;
 
 import java.util.Map;
 import org.springframework.http.HttpHeaders;
+
 
 
 @RestController
@@ -87,15 +91,21 @@ private UsuarioService usuarioService;
                             "href": "/api/v1/usuarios/Nombre/{nombre}",
                             "templated": true
                         },
+                        "crear-usuario": {
+                            "href": "/api/v1/usuarios",
+                            "type": "POST"
+                        },
+                        "actualizar-usuario": {
+                            "href": "/api/v1/usuarios/{id}",
+                            "templated": true,
+                            "type": "PUT"
+                        },
                         "eliminar-usuario": { 
                             "href": "/api/v1/usuarios/{id}",
                             "templated": true,
                             "type": "DELETE"
                         },
-                        "crear-usuario": {
-                            "href": "/api/v1/usuarios",
-                            "type": "POST"
-                        },
+                        
                         "lista-vacia": { "href": "/api/v1/usuarios/lista-vacia" }
                     }
                 }"""
@@ -103,7 +113,8 @@ private UsuarioService usuarioService;
         )
     )
 })
-<<<<<<< HEAD
+
+
 @GetMapping("/index")
 public EntityModel<Map<String, String>> getBasicApiIndex() {
     Map<String, String> content = new HashMap<>();
@@ -125,8 +136,6 @@ public EntityModel<Map<String, String>> getBasicApiIndex() {
     return EntityModel.of(
         content,
         linkTo(methodOn(UsuarioControllerV2.class).getBasicApiIndex()).withSelfRel(),
-<<<<<<< HEAD
-<<<<<<< HEAD
         linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("obtener-usuarios"),
         linkTo(methodOn(UsuarioControllerV2.class).getUsuario(0)).withRel("obtener-usuario")
             .withName("id")
@@ -147,35 +156,13 @@ public EntityModel<Map<String, String>> getBasicApiIndex() {
         linkTo(methodOn(UsuarioControllerV2.class).deleteUsuario(0)).withRel("eliminar-usuario")
             .withType("DELETE")
             .withTitle("Eliminar usuario por ID"),
-        linkTo(methodOn(UsuarioControllerV2.class).getListaVacia()).withRel("lista-vacia")
+        
+            linkTo(methodOn(UsuarioControllerV2.class).getListaVacia()).withRel("lista-vacia")
             .withTitle("Lista vacía de usuarios")
     );
 }
 
 // Obtener todos los usuarios con enlaces HATEOAS
-=======
-        linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("obtener-usuarios")
-=======
-        linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("obtener-usuarios"),
-        linkTo(methodOn(UsuarioControllerV2.class).buscarUsuarios("")).withRel("buscar-usuarios")
-            .withName("nombre")
-            .withTitle("Buscar usuarios por nombre parcial"),
-        linkTo(methodOn(UsuarioControllerV2.class).getByNombre("{nombre}")).withRel("buscar-por-nombre-exacto")
-            .withName("nombre")
-            .withTitle("Buscar usuario por nombre exacto"),
-        linkTo(methodOn(UsuarioControllerV2.class).deleteUsuario(0)).withRel("eliminar-usuario")
-            .withType("DELETE")
-            .withTitle("Eliminar usuario por ID"),
-        linkTo(methodOn(UsuarioControllerV2.class).addUsuario(null)).withRel("crear-usuario")
-            .withType("POST")
-            .withTitle("Crear nuevo usuario"),
-        linkTo(methodOn(UsuarioControllerV2.class).getListaVacia()).withRel("lista-vacia")
-            .withTitle("Lista vacía de usuarios")
-    );
-}
-
-
->>>>>>> 7ea354e (Agregar endpoint para obtener índice básico de la API de Usuarios)
 @Operation(
     summary = "Obtener todos los usuarios",
     description = "Devuelve una lista de todos los usuarios registrados"
@@ -206,6 +193,7 @@ public EntityModel<Map<String, String>> getBasicApiIndex() {
     );
 }
 
+// Agregar un nuevo usuario con enlaces HATEOAS
 // Agregar un nuevo usuario con enlaces HATEOAS
 @Operation(
     summary = "Agregar un nuevo usuario",
@@ -279,6 +267,7 @@ public ResponseEntity<EntityModel<Usuario>> addUsuario(@Valid @RequestBody Usuar
 
 
 // Obtener un usuario por ID con enlaces HATEOAS
+// Obtener un usuario por ID con enlaces HATEOAS
 @Operation(
     summary = "Obtener usuario por ID",
     description = "Busca y devuelve un usuario según su identificador único. La respuesta incluye enlaces HATEOAS para acciones relacionadas."
@@ -310,26 +299,13 @@ public ResponseEntity<EntityModel<Usuario>> getUsuario(
     Usuario usuario = usuarioService.getUsuarioById(id);
     
     if (usuario != null) {
-        EntityModel<Usuario> model = EntityModel.of(usuario);
-        
-        // Enlace self (GET)
-        model.add(linkTo(methodOn(UsuarioControllerV2.class)
-            .getUsuario(id))
-            .withSelfRel()
-            .withType("GET"));
-        
-        // Enlace a la lista de usuarios (usando getUsuarios() que sí existe)
-        model.add(linkTo(methodOn(UsuarioControllerV2.class)
-            .getUsuarios())
-            .withRel("todos-usuarios")
-            .withType("GET"));
-        
-        return ResponseEntity.ok(model);
+        return ResponseEntity.ok(usuario);
+    } else {
+        return ResponseEntity.notFound().build();
     }
-    return ResponseEntity.notFound().build();
 }
 
-// Actualizar un usuario por ID
+// Actualizar un usuario por ID   
 @Operation(
     summary = "Actualizar usuario",
     description = "Actualiza completamente un usuario existente",
@@ -338,6 +314,9 @@ public ResponseEntity<EntityModel<Usuario>> getUsuario(
             name = "id",
             description = "ID del usuario a actualizar",
             required = true,
+            in = ParameterIn.PATH,
+            example = "1",
+            schema = @Schema(type = "integer")
             in = ParameterIn.PATH,
             example = "1",
             schema = @Schema(type = "integer")
@@ -360,12 +339,58 @@ public ResponseEntity<EntityModel<Usuario>> getUsuario(
                     }"""
                 )
             }
+            examples = {
+                @ExampleObject(
+                    name = "Actualización básica",
+                    value = """
+                    {
+                        "nombre": "Juan Pérez",
+                        "email": "juan.perez@example.com",
+                        "contrasena": "nuevaContraseña123"
+                    }"""
+                )
+            }
         )
     )
 )
 @ApiResponses({
     @ApiResponse(
         responseCode = "200",
+        description = "Usuario actualizado exitosamente",
+        content = @Content(
+            mediaType = "application/hal+json",
+            schema = @Schema(implementation = Usuario.class),
+            examples = @ExampleObject(
+                value = """
+                {
+                    "id": 1,
+                    "nombre": "Juan Pérez",
+                    "email": "juan.perez@example.com",
+                    "_links": {
+                        "self": {
+                            "href": "/api/v1/usuarios/1",
+                            "type": "PUT"
+                        },
+                        "get": {
+                            "href": "/api/v1/usuarios/1",
+                            "type": "GET"
+                        },
+                        "delete": {
+                            "href": "/api/v1/usuarios/1",
+                            "type": "DELETE"
+                        },
+                        "usuarios": {
+                            "href": "/api/v1/usuarios",
+                            "type": "GET"
+                        }
+                    }
+                }"""
+            )
+        )
+    ),
+    @ApiResponse(
+        responseCode = "400",
+        description = "Datos de entrada inválidos",
         description = "Usuario actualizado exitosamente",
         content = @Content(
             mediaType = "application/hal+json",
@@ -421,6 +446,25 @@ public ResponseEntity<EntityModel<Usuario>> getUsuario(
                     }
                 }"""
             )
+            mediaType = "application/hal+json",
+            examples = @ExampleObject(
+                value = """
+                {
+                    "error": "El email proporcionado no es válido",
+                    "timestamp": "2023-08-15T10:30:00Z",
+                    "status": 400,
+                    "_links": {
+                        "self": {
+                            "href": "/api/v1/usuarios/1",
+                            "type": "PUT"
+                        },
+                        "documentacion": {
+                            "href": "/api/v1/usuarios",
+                            "type": "GET"
+                        }
+                    }
+                }"""
+            )
         )
     ),
     @ApiResponse(
@@ -448,16 +492,97 @@ public ResponseEntity<EntityModel<Usuario>> getUsuario(
             )
         )
     )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Usuario no encontrado",
+        content = @Content(
+            mediaType = "application/hal+json",
+            examples = @ExampleObject(
+                value = """
+                {
+                    "error": "Usuario no encontrado con ID: 99",
+                    "timestamp": "2023-08-15T10:30:00Z",
+                    "status": 404,
+                    "_links": {
+                        "usuarios": {
+                            "href": "/api/v1/usuarios",
+                            "type": "GET"
+                        },
+                        "crear": {
+                            "href": "/api/v1/usuarios",
+                            "type": "POST"
+                        }
+                    }
+                }"""
+            )
+        )
+    )
 })
-@PutMapping("/{id}")
-public ResponseEntity<Usuario> updateUsuario(@PathVariable("id") int id, @RequestBody Usuario usuario) {
-    Usuario actualizado = usuarioService.updateUsuario(usuario);
-    if (actualizado != null) {
-        return ResponseEntity.ok(actualizado);
-    } else {
-        return ResponseEntity.notFound().build();
+@PutMapping(value = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
+public ResponseEntity<?> updateUsuario(
+        @PathVariable("id") int id,
+        @Valid @RequestBody Usuario usuario) {
+
+    try {
+        // 1. Validación y actualización
+        usuario.setId(id);
+        Usuario actualizado = usuarioService.updateUsuario(usuario);
+
+        // 2. Construcción de enlaces HATEOAS
+        Link selfLink = linkTo(methodOn(UsuarioControllerV2.class)
+                .updateUsuario(id, usuario)).withSelfRel()
+                .withType("PUT");
+
+        Link getLink = linkTo(methodOn(UsuarioControllerV2.class)
+                .getUsuario(id)).withRel("get")
+                .withType("GET");
+
+        Link deleteLink = linkTo(methodOn(UsuarioControllerV2.class)
+                .deleteUsuario(id)).withRel("delete")
+                .withType("DELETE");
+
+        Link allUsersLink = linkTo(methodOn(UsuarioControllerV2.class)
+                .getUsuarios()).withRel("usuarios")
+                .withType("GET");
+
+        // 3. Construcción del modelo de respuesta
+        EntityModel<Usuario> model = EntityModel.of(actualizado);
+        model.add(selfLink, getLink, deleteLink, allUsersLink);
+
+        // 4. Retorno de respuesta
+        return ResponseEntity.ok(model);
+
+    } catch (EntityNotFoundException ex) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND,
+                "Usuario no encontrado con ID: " + id,
+                linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("usuarios"),
+                linkTo(methodOn(UsuarioControllerV2.class).addUsuario(null)).withRel("crear"));
+    } catch (IllegalArgumentException ex) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST,
+                ex.getMessage(),
+                linkTo(methodOn(UsuarioControllerV2.class).updateUsuario(id, usuario)).withSelfRel(),
+                linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("documentacion")); // Cambio clave aquí
+    } catch (Exception ex) {
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error interno del servidor",
+                linkTo(methodOn(UsuarioControllerV2.class).updateUsuario(id, usuario)).withSelfRel());
     }
 }
+
+private ResponseEntity<EntityModel<Map<String, Object>>> buildErrorResponse(
+        HttpStatus status, String errorMessage, Link... links) {
+
+    Map<String, Object> errorBody = new HashMap<>();
+    errorBody.put("error", errorMessage);
+    errorBody.put("timestamp", Instant.now().toString());
+    errorBody.put("status", status.value());
+
+    EntityModel<Map<String, Object>> errorModel = EntityModel.of(errorBody, links);
+    return ResponseEntity.status(status).body(errorModel);
+}
+
+
+
 
 // Eliminar un usuario por ID
 @Operation(
