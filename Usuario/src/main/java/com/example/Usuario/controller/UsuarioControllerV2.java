@@ -53,24 +53,26 @@ private UsuarioService usuarioService;
     private UsuarioModelAssembler assembler;
 
 
-
+// Índice de Endpoints
 @Operation(
-    summary = "Índice Básico de Endpoints",
-    description = "Muestra los endpoints principales disponibles en la API de Usuarios"
+    summary = "Índice de Endpoints",
+    description = "Muestra todos los endpoints disponibles en la API de Usuarios"
 )
+
 @ApiResponses({
     @ApiResponse(
         responseCode = "200",
-        description = "Directorio básico de endpoints",
+        description = "Directorio de endpoints",
         content = @Content(
-            mediaType = "application/json",
+            mediaType = MediaTypes.HAL_JSON_VALUE,
             examples = @ExampleObject(
                 value = """
                 {
-                    "description": "API de Usuarios - Endpoints disponibles",
+                    "description": "API de Gestión de Usuarios v1.0",
                     "_links": {
                         "self": { "href": "http://localhost:8081/api/v1/usuarios/index" },
-                        "obtener-usuarios": { "href": "http://localhost:8081/api/v1/usuarios" }
+                        "obtener-usuarios": { "href": "http://localhost:8081/api/v1/usuarios" },
+                        "lista-vacia": { "href": "http://localhost:8081/api/v1/usuarios/vaciar" }
                     }
                 }"""
             )
@@ -81,14 +83,16 @@ private UsuarioService usuarioService;
 @GetMapping("/index")
 public EntityModel<Map<String, String>> getBasicApiIndex() {
     Map<String, String> content = new HashMap<>();
-    content.put("description", "API de Usuarios - Endpoints disponibles");
+    content.put("description", "API de Gestión de Usuarios v1.0");
+    content.put("version", "1.0");
     
     return EntityModel.of(
         content,
         linkTo(methodOn(UsuarioControllerV2.class).getBasicApiIndex()).withSelfRel(),
-        linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("obtener-usuarios")
+        linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("obtener-usuarios"),
+        linkTo(methodOn(UsuarioControllerV2.class).getListaVacia()).withRel("lista-vacia")
     );
-}    
+}
 
 
 @Operation(
@@ -351,9 +355,15 @@ public ResponseEntity<List<Usuario>> buscarUsuarios(@RequestParam("nombre") Stri
         )
     )
 })
-@GetMapping("/vaciar")
-public ResponseEntity<List<Usuario>> getListaVacia() {
-    List<Usuario> listaVacia = Collections.emptyList();
-    return ResponseEntity.ok(listaVacia);
+
+@GetMapping(value = "/vaciar", produces = MediaTypes.HAL_JSON_VALUE)
+public CollectionModel<EntityModel<Usuario>> getListaVacia() {
+    List<EntityModel<Usuario>> listaVacia = Collections.emptyList();
+    
+    return CollectionModel.of(
+        listaVacia,
+        linkTo(methodOn(UsuarioControllerV2.class).getListaVacia()).withSelfRel(),
+        linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("todos-usuarios")
+    );
 }
 }
