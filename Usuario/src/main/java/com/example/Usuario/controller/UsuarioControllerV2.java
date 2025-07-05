@@ -53,6 +53,9 @@ import org.springframework.http.HttpHeaders;
 
 
 
+import java.util.Map;
+
+
 @RestController
 @RequestMapping("/api/v1/usuarios")
 @Tag(name = "Usuarios", description = "API para gestionar usuarios")
@@ -65,14 +68,22 @@ private UsuarioService usuarioService;
     private UsuarioModelAssembler assembler;
 
 
+<<<<<<< HEAD
 // Obtener índice de la API con enlaces HATEOAS
 @Operation(
     summary = "Obtener índice de la API",
     description = "Devuelve información básica de la API con enlaces HATEOAS a todos los endpoints principales"
+=======
+
+@Operation(
+    summary = "Índice Básico de Endpoints",
+    description = "Muestra los endpoints principales disponibles en la API de Usuarios"
+>>>>>>> 7ea354e (Agregar endpoint para obtener índice básico de la API de Usuarios)
 )
 @ApiResponses({
     @ApiResponse(
         responseCode = "200",
+<<<<<<< HEAD
         description = "Índice de la API obtenido exitosamente",
         content = @Content(
             mediaType = MediaTypes.HAL_JSON_VALUE,
@@ -121,21 +132,42 @@ private UsuarioService usuarioService;
                             "href": "/api/v1/usuarios/lista-vacia",
                             "title": "Lista vacía de usuarios"
                         }
+=======
+        description = "Directorio básico de endpoints",
+        content = @Content(
+            mediaType = "application/json",
+            examples = @ExampleObject(
+                value = """
+                {
+                    "description": "API de Usuarios - Endpoints disponibles",
+                    "_links": {
+                        "self": { "href": "http://localhost:8081/api/v1/usuarios/index" },
+                        "obtener-usuarios": { "href": "http://localhost:8081/api/v1/usuarios" }
+>>>>>>> 7ea354e (Agregar endpoint para obtener índice básico de la API de Usuarios)
                     }
                 }"""
             )
         )
     )
 })
+<<<<<<< HEAD
 @GetMapping("/index")
 public EntityModel<Map<String, String>> getBasicApiIndex() {
     Map<String, String> content = new HashMap<>();
     content.put("description", "API de Gestión de Usuarios v1.0");
     content.put("version", "1.0");
+=======
+
+@GetMapping("/index")
+public EntityModel<Map<String, String>> getBasicApiIndex() {
+    Map<String, String> content = new HashMap<>();
+    content.put("description", "API de Usuarios - Endpoints disponibles");
+>>>>>>> 7ea354e (Agregar endpoint para obtener índice básico de la API de Usuarios)
     
     return EntityModel.of(
         content,
         linkTo(methodOn(UsuarioControllerV2.class).getBasicApiIndex()).withSelfRel(),
+<<<<<<< HEAD
         linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("obtener-usuarios"),
         linkTo(methodOn(UsuarioControllerV2.class).getUsuario(0)).withRel("obtener-usuario")
             .withName("id")
@@ -162,6 +194,13 @@ public EntityModel<Map<String, String>> getBasicApiIndex() {
 }
 
 // Obtener todos los usuarios con enlaces HATEOAS
+=======
+        linkTo(methodOn(UsuarioControllerV2.class).getUsuarios()).withRel("obtener-usuarios")
+    );
+}    
+
+
+>>>>>>> 7ea354e (Agregar endpoint para obtener índice básico de la API de Usuarios)
 @Operation(
     summary = "Obtener todos los usuarios",
     description = "Devuelve una lista de todos los usuarios registrados"
